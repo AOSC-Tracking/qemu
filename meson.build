@@ -3824,13 +3824,19 @@ foreach d, list : modules
   foreach m, module_ss : list
     if enable_modules
       module_ss.add(modulecommon)
-      module_ss = module_ss.apply(config_all_devices, strict: false)
-      sl = static_library(d + '-' + m, [genh, module_ss.sources()],
-                          dependencies: module_ss.dependencies(), pic: true)
+      module_dn = module_ss.apply(config_all, strict: false)
+      sl = static_library(d + '-' + m, [genh, module_dn.sources()],
+                          dependencies: module_dn.dependencies(), pic: true)
       if d == 'block'
         block_mods += sl
       else
-        system_mods += sl
+        # we only build 2 non-block modules as modules: it is the gui part
+        if d + '-' + m in [ 'ui-gtk', 'ui-sdl', 'audio-pa' ]
+          system_mods += sl
+        else
+          warning('Compiling module statically: ' + d + '-' + m)
+          system_ss.add_all(module_ss)
+        endif
       endif
       emulator_modules += shared_module(sl.name(),
                     name_prefix: '',
