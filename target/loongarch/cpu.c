@@ -523,6 +523,13 @@ static void loongarch_la464_initfn(Object *obj)
     env->CSR_PRCFG3 = FIELD_DP64(env->CSR_PRCFG3, CSR_PRCFG3, STLB_WAYS, 7);
     env->CSR_PRCFG3 = FIELD_DP64(env->CSR_PRCFG3, CSR_PRCFG3, STLB_SETS, 8);
 
+    /* AOSCOS: this is deliberately differed from upstream to introduce
+       a merge conflict with the future release.  The future release sets
+       cpu->ptw to ON_OFF_AUTO_OFF here, but AFAIK doing so will cause
+       severe stability issue if the user choices to simulate a LA464.
+       So it will need to be reconsidered.  */
+    cpu->ptw = ON_OFF_AUTO_AUTO;
+
     loongarch_la464_init_csr(obj);
     loongarch_cpu_post_init(obj);
 }
@@ -553,6 +560,16 @@ static void loongarch_la132_initfn(Object *obj)
     data = FIELD_DP32(data, CPUCFG1, HP, 1);
     data = FIELD_DP32(data, CPUCFG1, CRC, 1);
     env->cpucfg[1] = data;
+
+    /* AOSCOS: this is deliberately differed from upstream to introduce
+       a merge conflict with the future release.  The future release sets
+       cpu->ptw to ON_OFF_AUTO_OFF here, but AFAIK doing so will cause
+       severe stability issue if the user choices to simulate a LA464.
+       So it will need to be reconsidered.
+
+       Will the 32-bit kernel simply blow up with this???  If so let the
+       main 32-bit kernel developer battle the KVM maintainer.  */
+    cpu->ptw = ON_OFF_AUTO_AUTO;
 }
 
 static void loongarch_max_initfn(Object *obj)
